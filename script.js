@@ -8,7 +8,7 @@ const LOGO_RATIO = 0.2;
 // Predefined overlay image (BCGEU Steward logo)
 const overlay = new Image();
 overlay.crossOrigin = 'anonymous';  // Allow cross-origin image loading
-overlay.src = 'bcgeu-steward-logo.png';  // Ensure this file is in the same repository
+overlay.src = 'bcgeu-steward-logo-outline.png';  // Ensure this file is in the same repository
 
 // Handle the file upload
 upload.addEventListener('change', (event) => {
