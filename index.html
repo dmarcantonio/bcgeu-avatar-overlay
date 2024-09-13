@@ -13,13 +13,17 @@
         
         <!-- File Input for Profile Image -->
         <input type="file" id="upload" accept="image/*" />
-        
+        <div>
+            <h3>Select Overlay:</h3>
+            <img id="stewardLogo" src="steward-logo-outline.png" alt="Steward Logo" width="100" style="cursor: pointer; margin-right: 10px;">
+            <img id="bcgeuStewardLogo" src="bcgeu-steward-logo-outline.png" alt="BCGEU Steward Logo" width="100" style="cursor: pointer;">
+        </div>        
         <!-- Canvas for Profile Image with Overlay -->
         <canvas id="canvas" width="400" height="400"></canvas>
         
         <!-- Button to Download Final Image -->
         <button id="downloadBtn">Download Profile Image</button>
-    </div>
+    </div>   
 
     <script src="script.js"></script>
 </body>
