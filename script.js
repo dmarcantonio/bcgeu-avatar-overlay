@@ -3,6 +3,8 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const downloadBtn = document.getElementById('downloadBtn');
 
+const LOGO_RATIO = 0.2;
+
 // Predefined overlay image (BCGEU Steward logo)
 const overlay = new Image();
 overlay.crossOrigin = 'anonymous';  // Allow cross-origin image loading
@@ -18,16 +20,41 @@ upload.addEventListener('change', (event) => {
         profileImage.src = e.target.result;
 
         profileImage.onload = function () {
-            // Clear canvas
+            // Clear the canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw uploaded profile image to fill the canvas
-            ctx.drawImage(profileImage, 0, 0, canvas.width, canvas.height);
+            // Calculate the aspect ratio of the uploaded image
+            const imageAspectRatio = profileImage.width / profileImage.height;
+            const canvasAspectRatio = canvas.width / canvas.height;
+
+            let sourceWidth, sourceHeight, sourceX, sourceY;
+
+            // Adjust cropping based on the aspect ratio
+            if (imageAspectRatio > canvasAspectRatio) {
+                // The image is wider, crop the sides
+                sourceHeight = profileImage.height;
+                sourceWidth = profileImage.height * canvasAspectRatio;
+                sourceX = (profileImage.width - sourceWidth) / 2;
+                sourceY = 0;
+            } else {
+                // The image is taller, crop the top and bottom
+                sourceWidth = profileImage.width;
+                sourceHeight = profileImage.width / canvasAspectRatio;
+                sourceX = 0;
+                sourceY = (profileImage.height - sourceHeight) / 2;
+            }
+
+            // Draw the image, cropping it to fill the canvas
+            ctx.drawImage(
+                profileImage,
+                sourceX, sourceY, sourceWidth, sourceHeight,  // Source (crop) coordinates
+                0, 0, canvas.width, canvas.height  // Destination (canvas) coordinates
+            );
 
             // Draw the overlay once the profile image is loaded
             overlay.onload = function () {
-                // Calculate the size for the overlay (10% of the canvas height)
-                const overlayHeight = canvas.height * 0.1;
+                // Calculate the size for the overlay (of the canvas height)
+                const overlayHeight = canvas.height * LOGO_RATIO;
                 const overlayWidth = (overlay.width / overlay.height) * overlayHeight;
 
                 // Calculate the position for the overlay (bottom-center)
