@@ -100,8 +100,61 @@ upload.addEventListener('change', (event) => {
 
 // Handle image download
 downloadBtn.addEventListener('click', () => {
-    const link = document.createElement('a');
-    link.download = 'BCGEU-Steward-Profile.png';
-    link.href = canvas.toDataURL();  // This will work if the canvas is not "tainted"
-    link.click();
+    // Create a hidden canvas for higher resolution export
+    const exportCanvas = document.createElement('canvas');
+    const exportCtx = exportCanvas.getContext('2d');
+
+    // Set the export canvas size to a larger resolution (e.g., 2x the original)
+    const exportScale = 2;  // Adjust this for the desired quality
+    exportCanvas.width = canvas.width * exportScale;
+    exportCanvas.height = canvas.height * exportScale;
+
+    // Scale everything up proportionally
+    exportCtx.scale(exportScale, exportScale);
+
+    // Redraw the profile image and overlay on the export canvas
+    if (profileImage) {
+        const imageAspectRatio = profileImage.width / profileImage.height;
+        const canvasAspectRatio = exportCanvas.width / exportCanvas.height;
+
+        let sourceWidth, sourceHeight, sourceX, sourceY;
+
+        // Adjust cropping based on the aspect ratio
+        if (imageAspectRatio > canvasAspectRatio) {
+            sourceHeight = profileImage.height;
+            sourceWidth = profileImage.height * canvasAspectRatio;
+            sourceX = (profileImage.width - sourceWidth) / 2;
+            sourceY = 0;
+        } else {
+            sourceWidth = profileImage.width;
+            sourceHeight = profileImage.width / canvasAspectRatio;
+            sourceX = 0;
+            sourceY = (profileImage.height - sourceHeight) / 2;
+        }
+
+        // Draw the cropped profile image
+        exportCtx.drawImage(
+            profileImage,
+            sourceX, sourceY, sourceWidth, sourceHeight,  // Source (crop) coordinates
+            0, 0, canvas.width, canvas.height  // Destination (canvas) coordinates
+        );
+    }
+
+    // Draw the overlay logo
+    const overlayHeight = canvas.height * LOGO_RATIO;
+    const overlayWidth = (overlay.width / overlay.height) * overlayHeight;
+
+    const x = (canvas.width - overlayWidth) / 2;
+    const y = canvas.height - overlayHeight - 10;
+
+    exportCtx.drawImage(overlay, x, y, overlayWidth, overlayHeight);
+
+    // Convert the canvas to a Blob for higher quality image download
+    exportCanvas.toBlob((blob) => {
+        const link = document.createElement('a');
+        link.download = 'BCGEU-Steward-Profile.png';
+        link.href = URL.createObjectURL(blob);
+        link.click();
+    }, 'image/png', 1.0);  // 1.0 for maximum quality
 });
+
